@@ -1,0 +1,30 @@
+---
+- name: Install Jenkins on EC2
+  hosts: web
+  become: yes
+  tasks:
+    - name: Install Java (Jenkins prerequisite)
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+
+    - name: Add Jenkins repo
+      get_url:
+        url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+
+    - name: Import Jenkins GPG key
+      rpm_key:
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+        state: present
+
+    - name: Install Jenkins
+      yum:
+        name: jenkins
+        state: present
+
+    - name: Start and Enable Jenkins
+      service:
+        name: jenkins
+        state: started
+        enabled: true
